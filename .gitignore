@@ -1,0 +1,21 @@
+# Secrets — never commit real credentials
+backend/.env
+frontend/.env
+*.pyc
+__pycache__/
+.venv/
+venv/
+env/
+
+# Node / Expo
+frontend/node_modules/
+.expo/
+dist/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large model weights (keep locally)
+backend/model/*.h5
