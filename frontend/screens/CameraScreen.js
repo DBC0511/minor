@@ -1,26 +1,36 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  View, Text, StyleSheet, TouchableOpacity, Image, Alert, ActivityIndicator
-} from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { useLanguage } from '../context/LanguageContext';
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as ImagePicker from "expo-image-picker";
+import { useLanguage } from "../context/LanguageContext";
+import { colors, fonts, radii } from "../constants/theme";
 
 export default function CameraScreen({ route, navigation }) {
   const { mode } = route.params;
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const { t } = useLanguage();
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    // Directly open gallery since camera is removed
-    pickFromGallery();
-  }, []);
+    if (mode === "gallery") {
+      pickFromGallery();
+    }
+  }, [mode]);
 
   const pickFromGallery = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Needed', 'Gallery access required to select images');
+      if (status !== "granted") {
+        Alert.alert(t("error"), t("gallery_permission"));
         navigation.goBack();
         return;
       }
@@ -37,90 +47,93 @@ export default function CameraScreen({ route, navigation }) {
         navigation.goBack();
       }
     } catch (error) {
-      console.error('Gallery error:', error);
-      Alert.alert('Error', 'Failed to open gallery');
+      console.error("Gallery error:", error);
+      Alert.alert(t("error"), t("network_error"));
       navigation.goBack();
     }
   };
 
   const analyzeImage = () => {
     if (image) {
-      navigation.replace('Result', { imageUri: image });
+      navigation.replace("Result", { imageUri: image });
     }
   };
 
-  // Show preview after selecting image
   if (image) {
     return (
       <View style={styles.container}>
         <Image source={{ uri: image }} style={styles.preview} />
-        <View style={styles.buttonRow}>
+        <View style={[styles.buttonRow, { paddingBottom: insets.bottom + 16 }]}>
           <TouchableOpacity style={[styles.button, styles.retakeButton]} onPress={() => setImage(null)}>
-            <Text style={styles.buttonText}>{t('retake') || 'Choose Different'}</Text>
+            <Text style={styles.buttonText}>{t("retake")}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.analyzeButton]} onPress={analyzeImage}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{t('analyze') || 'Analyze'}</Text>}
+            {loading ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              <Text style={styles.buttonText}>
+                🔬 {t("analyze")}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </View>
     );
   }
 
-  // Loading state while opening gallery
   return (
     <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#2ecc71" />
-      <Text style={styles.loadingText}>Opening gallery...</Text>
+      <ActivityIndicator size="large" color={colors.sage} />
+      <Text style={styles.loadingText}>{t("opening_gallery")}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#000' 
+  container: {
+    flex: 1,
+    backgroundColor: colors.ink,
   },
-  loadingContainer: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: '#f0f4f0' 
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.paper,
   },
-  loadingText: { 
-    marginTop: 20, 
-    fontSize: 16, 
-    color: '#666' 
+  loadingText: {
+    marginTop: 20,
+    fontFamily: fonts.sans,
+    fontSize: 16,
+    color: colors.muted,
   },
-  preview: { 
-    flex: 1, 
-    resizeMode: 'contain', 
-    backgroundColor: '#000' 
+  preview: {
+    flex: 1,
+    resizeMode: "contain",
+    backgroundColor: colors.ink,
   },
-  buttonRow: { 
-    flexDirection: 'row', 
-    padding: 20, 
-    gap: 15, 
-    backgroundColor: '#000', 
-    position: 'absolute', 
-    bottom: 0, 
-    left: 0, 
-    right: 0 
+  buttonRow: {
+    flexDirection: "row",
+    padding: 20,
+    gap: 12,
+    backgroundColor: colors.forest,
   },
-  button: { 
-    flex: 1, 
-    padding: 15, 
-    borderRadius: 12, 
-    alignItems: 'center' 
+  button: {
+    flex: 1,
+    padding: 15,
+    borderRadius: radii.md,
+    alignItems: "center",
   },
-  retakeButton: { 
-    backgroundColor: '#e74c3c' 
+  retakeButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.35)",
   },
-  analyzeButton: { 
-    backgroundColor: '#2ecc71' 
+  analyzeButton: {
+    backgroundColor: colors.sage,
   },
-  buttonText: { 
-    color: '#fff', 
-    fontWeight: 'bold', 
-    fontSize: 16 
-  }
+  buttonText: {
+    color: colors.white,
+    fontFamily: fonts.sansSemi,
+    fontSize: 16,
+  },
 });

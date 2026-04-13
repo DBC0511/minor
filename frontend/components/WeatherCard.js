@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { colors, fonts, radii } from "../constants/theme";
 
 function weatherEmoji(condition) {
   const c = (condition || "").toLowerCase();
@@ -11,22 +12,39 @@ function weatherEmoji(condition) {
 }
 
 function riskColor(risk) {
-  if (risk === "HIGH") return "#e74c3c";
-  if (risk === "MEDIUM") return "#f39c12";
-  return "#27ae60";
+  if (!risk) return colors.sage;
+  const r = String(risk).toUpperCase();
+  if (r === "HIGH") return colors.rust;
+  if (r === "MEDIUM") return colors.amber;
+  return colors.sage;
+}
+
+/** Normalize Flask `/weather` JSON and any legacy field names. */
+function normalize(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  return {
+    temperature_c: raw.temperature_c ?? raw.temperature,
+    humidity: raw.humidity,
+    condition: raw.condition,
+    wind_speed_ms: raw.wind_speed_ms ?? raw.wind_speed,
+    disease_risk: raw.disease_risk ?? raw.risk_level,
+    farming_advice: raw.farming_advice ?? raw.advice,
+    is_mock: raw.is_mock ?? false,
+  };
 }
 
 export default function WeatherCard({ weather, loading, error, onRetry, t }) {
   if (loading) {
     return (
       <View style={styles.card}>
-        <ActivityIndicator color="#2ecc71" />
+        <ActivityIndicator color={colors.sage} />
         <Text style={styles.muted}>{t("fetching_weather")}</Text>
       </View>
     );
   }
 
-  if (error || !weather) {
+  const w = normalize(weather);
+  if (error || !w) {
     return (
       <View style={styles.card}>
         <Text style={styles.err}>{t("weather_error")}</Text>
@@ -39,78 +57,80 @@ export default function WeatherCard({ weather, loading, error, onRetry, t }) {
     );
   }
 
-  const emoji = weatherEmoji(weather.condition);
-  const rc = riskColor(weather.disease_risk);
+  const emoji = weatherEmoji(w.condition);
+  const rc = riskColor(w.disease_risk);
   const riskLabel =
-    weather.disease_risk === "HIGH"
+    String(w.disease_risk || "").toUpperCase() === "HIGH"
       ? t("risk_high")
-      : weather.disease_risk === "MEDIUM"
+      : String(w.disease_risk || "").toUpperCase() === "MEDIUM"
         ? t("risk_medium")
         : t("risk_low");
 
   return (
-    <LinearGradient colors={["#2ecc71", "#27ae60"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.grad}>
+    <LinearGradient colors={[colors.moss, colors.forest]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.grad}>
       <View style={styles.headerRow}>
         <Text style={styles.emoji}>{emoji}</Text>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{t("weather")}</Text>
-          {weather.is_mock ? <Text style={styles.mock}>{t("mock_weather")}</Text> : null}
+          {w.is_mock ? <Text style={styles.mock}>{t("mock_weather")}</Text> : null}
         </View>
       </View>
       <View style={styles.statsRow}>
         <View style={styles.stat}>
           <Text style={styles.statLabel}>{t("temperature")}</Text>
           <Text style={styles.statVal}>
-            {weather.temperature_c}
+            {w.temperature_c}
             {t("celsius")}
           </Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statLabel}>{t("humidity")}</Text>
           <Text style={styles.statVal}>
-            {weather.humidity}
+            {w.humidity}
             {t("percent_unit")}
           </Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statLabel}>{t("wind_speed")}</Text>
-          <Text style={styles.statVal}>{weather.wind_speed_ms} m/s</Text>
+          <Text style={styles.statVal}>{w.wind_speed_ms} m/s</Text>
         </View>
       </View>
       <Text style={styles.cond}>
-        {t("condition")}: {weather.condition}
+        {t("condition")}: {w.condition}
       </Text>
       <View style={styles.riskRow}>
         <Text style={styles.riskText}>{t("risk_level")}: </Text>
         <Text style={[styles.riskBadge, { color: rc }]}>{riskLabel}</Text>
       </View>
-      <Text style={styles.advice}>{weather.farming_advice}</Text>
+      <Text style={styles.advice}>{w.farming_advice}</Text>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 15,
+    backgroundColor: colors.white,
+    borderRadius: radii.lg,
     padding: 20,
     alignItems: "center",
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
+    marginBottom: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    marginBottom: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   grad: {
-    borderRadius: 15,
+    borderRadius: radii.lg,
     padding: 18,
     marginBottom: 4,
-    elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 4,
   },
   headerRow: {
     flexDirection: "row",
@@ -122,11 +142,12 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   title: {
+    fontFamily: fonts.display,
     fontSize: 20,
-    fontWeight: "800",
-    color: "#fff",
+    color: colors.white,
   },
   mock: {
+    fontFamily: fonts.sans,
     fontSize: 11,
     color: "rgba(255,255,255,0.85)",
     marginTop: 2,
@@ -140,18 +161,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statLabel: {
+    fontFamily: fonts.sans,
     fontSize: 11,
     color: "rgba(255,255,255,0.85)",
   },
   statVal: {
+    fontFamily: fonts.sansSemi,
     fontSize: 16,
-    fontWeight: "700",
-    color: "#fff",
+    color: colors.white,
     marginTop: 2,
   },
   cond: {
+    fontFamily: fonts.sans,
     fontSize: 13,
-    color: "#fff",
+    color: colors.white,
     marginBottom: 8,
   },
   riskRow: {
@@ -160,13 +183,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   riskText: {
+    fontFamily: fonts.sansSemi,
     fontSize: 13,
-    fontWeight: "700",
-    color: "#fff",
+    color: colors.white,
   },
   riskBadge: {
+    fontFamily: fonts.sansSemi,
     fontSize: 14,
-    fontWeight: "900",
     backgroundColor: "rgba(255,255,255,0.95)",
     paddingHorizontal: 10,
     paddingVertical: 2,
@@ -174,23 +197,27 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   advice: {
+    fontFamily: fonts.sans,
     fontSize: 13,
     color: "rgba(255,255,255,0.95)",
     lineHeight: 18,
   },
   muted: {
     marginTop: 8,
-    color: "#666",
+    fontFamily: fonts.sans,
+    color: colors.muted,
     fontSize: 14,
   },
   err: {
-    color: "#e74c3c",
+    fontFamily: fonts.sansSemi,
+    color: colors.ember,
     fontSize: 14,
     textAlign: "center",
   },
   retry: {
     marginTop: 10,
-    color: "#3498db",
-    fontWeight: "700",
+    fontFamily: fonts.sansSemi,
+    color: colors.moss,
+    fontSize: 14,
   },
 });

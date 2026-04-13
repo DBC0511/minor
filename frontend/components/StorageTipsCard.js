@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { colors, fonts, radii } from "../constants/theme";
 
 export default function StorageTipsCard({ storageTips, treatment, labels }) {
   return (
@@ -15,30 +16,33 @@ export default function StorageTipsCard({ storageTips, treatment, labels }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 15,
+    backgroundColor: colors.white,
+    borderRadius: radii.lg,
     padding: 16,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.06)",
+    elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.06,
     shadowRadius: 6,
   },
   cardTitle: {
+    fontFamily: fonts.sansSemi,
     fontSize: 16,
-    fontWeight: "700",
-    color: "#333",
+    color: colors.ink,
     marginBottom: 10,
   },
   section: {
+    fontFamily: fonts.sansSemi,
     fontSize: 12,
-    fontWeight: "700",
-    color: "#2ecc71",
+    color: colors.moss,
     marginBottom: 6,
   },
   body: {
+    fontFamily: fonts.sans,
     fontSize: 14,
-    color: "#333",
+    color: colors.inkMid,
     lineHeight: 20,
   },
 });

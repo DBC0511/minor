@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { colors, fonts, radii } from "../constants/theme";
 
-const GREEN = "#2ecc71";
-const BLUE = "#3498db";
+const GREEN = colors.sage;
+const BLUE = colors.moss;
 
 /**
  * Horizontal bar chart using Views — no external chart library.
@@ -33,34 +34,37 @@ export default function TopPredictionsChart({ items = [], title }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 15,
+    backgroundColor: colors.white,
+    borderRadius: radii.lg,
     padding: 16,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.06)",
+    elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.06,
     shadowRadius: 6,
   },
   title: {
+    fontFamily: fonts.sansSemi,
     fontSize: 16,
-    fontWeight: "700",
-    color: "#333",
+    color: colors.ink,
     marginBottom: 12,
   },
   row: {
     marginBottom: 10,
   },
   label: {
+    fontFamily: fonts.sansMedium,
     fontSize: 12,
-    color: "#333",
+    color: colors.ink,
     marginBottom: 4,
     maxWidth: "100%",
   },
   track: {
     height: 10,
     borderRadius: 6,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: colors.cream,
     overflow: "hidden",
   },
   bar: {
@@ -69,8 +73,9 @@ const styles = StyleSheet.create({
   },
   val: {
     marginTop: 4,
+    fontFamily: fonts.sans,
     fontSize: 11,
-    color: "#666",
+    color: colors.muted,
     textAlign: "right",
   },
 });

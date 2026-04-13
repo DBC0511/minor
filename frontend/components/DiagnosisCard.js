@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { colors, fonts, radii } from "../constants/theme";
 
 /**
  * Shows primary diagnosis: disease, confidence, severity, urgency.
@@ -32,19 +33,21 @@ export default function DiagnosisCard({ disease, confidence, severity, urgency, 
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 15,
+    backgroundColor: colors.white,
+    borderRadius: radii.lg,
     padding: 16,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.06)",
+    elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.06,
     shadowRadius: 6,
   },
   cardTitle: {
+    fontFamily: fonts.sansSemi,
     fontSize: 16,
-    fontWeight: "700",
-    color: "#333",
+    color: colors.ink,
     marginBottom: 12,
   },
   grid: {
@@ -61,20 +64,22 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   k: {
+    fontFamily: fonts.sansSemi,
     fontSize: 11,
-    color: "#666",
+    color: colors.muted,
     marginBottom: 4,
     textTransform: "uppercase",
     letterSpacing: 0.4,
   },
   v: {
+    fontFamily: fonts.sansSemi,
     fontSize: 15,
-    fontWeight: "700",
-    color: "#333",
+    color: colors.ink,
   },
   vSmall: {
+    fontFamily: fonts.sans,
     fontSize: 14,
-    color: "#333",
+    color: colors.ink,
     lineHeight: 20,
   },
 });

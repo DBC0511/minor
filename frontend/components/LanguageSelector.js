@@ -9,21 +9,28 @@ import {
 } from "react-native";
 import { useLanguage } from "../context/LanguageContext";
 import { SUPPORTED_LANGS } from "../utils/translations";
+import { colors, fonts, radii } from "../constants/theme";
 
 /**
  * Opens a modal to pick app language; persists via LanguageContext.
+ * @param {{ variant?: "dark" | "light" }} props
  */
-export default function LanguageSelector() {
+export default function LanguageSelector({ variant = "light" }) {
   const { lang, setLang, t } = useLanguage();
   const [open, setOpen] = useState(false);
 
   const current = SUPPORTED_LANGS.find((l) => l.code === lang)?.label || "English";
+  const isDark = variant === "dark";
 
   return (
     <>
-      <TouchableOpacity style={styles.btn} onPress={() => setOpen(true)} activeOpacity={0.85}>
-        <Text style={styles.btnText}>
-          {t("language")}: {current}
+      <TouchableOpacity
+        style={[styles.btn, isDark ? styles.btnDark : styles.btnLight]}
+        onPress={() => setOpen(true)}
+        activeOpacity={0.85}
+      >
+        <Text style={[styles.btnText, isDark && styles.btnTextDark]}>
+          🌐 {current}
         </Text>
       </TouchableOpacity>
 
@@ -58,16 +65,26 @@ export default function LanguageSelector() {
 
 const styles = StyleSheet.create({
   btn: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    backgroundColor: "rgba(255,255,255,0.25)",
-    borderRadius: 25,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: radii.pill,
     alignSelf: "flex-start",
   },
+  btnLight: {
+    backgroundColor: "rgba(0,0,0,0.06)",
+  },
+  btnDark: {
+    backgroundColor: colors.forest,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+  },
   btnText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 13,
+    fontFamily: fonts.sansSemi,
+    fontSize: 12,
+    color: colors.ink,
+  },
+  btnTextDark: {
+    color: "rgba(255,255,255,0.92)",
   },
   backdrop: {
     flex: 1,
@@ -76,32 +93,35 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   sheet: {
-    backgroundColor: "#fff",
-    borderRadius: 15,
+    backgroundColor: colors.white,
+    borderRadius: radii.lg,
     padding: 16,
     maxHeight: "70%",
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.06)",
   },
   sheetTitle: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: "#333",
+    fontFamily: fonts.sansSemi,
+    fontSize: 17,
+    color: colors.ink,
     marginBottom: 12,
   },
   item: {
     paddingVertical: 14,
     paddingHorizontal: 12,
-    borderRadius: 12,
+    borderRadius: radii.md,
     marginBottom: 8,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: colors.paper,
   },
   itemActive: {
-    backgroundColor: "rgba(46, 204, 113, 0.2)",
+    backgroundColor: colors.foam,
     borderWidth: 1,
-    borderColor: "#2ecc71",
+    borderColor: colors.sage,
   },
   itemText: {
+    fontFamily: fonts.sansMedium,
     fontSize: 16,
-    color: "#333",
+    color: colors.ink,
   },
   close: {
     marginTop: 8,
@@ -109,8 +129,8 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   closeText: {
-    color: "#3498db",
-    fontWeight: "700",
+    fontFamily: fonts.sansSemi,
     fontSize: 15,
+    color: colors.moss,
   },
 });

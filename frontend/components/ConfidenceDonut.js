@@ -2,7 +2,9 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { Circle, G } from "react-native-svg";
 
-const PRIMARY = "#2ecc71";
+import { colors, fonts } from "../constants/theme";
+
+const PRIMARY = colors.sage;
 
 /**
  * Donut chart: confidence % in the center using react-native-svg arcs via stroke dash.
@@ -58,13 +60,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   pct: {
+    fontFamily: fonts.sansSemi,
     fontSize: 22,
-    fontWeight: "800",
-    color: "#333",
+    color: colors.ink,
   },
   sub: {
+    fontFamily: fonts.sans,
     fontSize: 11,
-    color: "#666",
+    color: colors.muted,
     marginTop: 2,
   },
 });
