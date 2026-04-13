@@ -4,6 +4,8 @@ frontend/.env
 *.pyc
 __pycache__/
 .venv/
+.venv_run/
+.ven/
 venv/
 env/
 
@@ -11,7 +13,11 @@ env/
 frontend/node_modules/
 .expo/
 dist/
+web-build/
+dist-test/
 npm-debug.log*
+.yarn/
+*.log
 
 # OS
 .DS_Store
